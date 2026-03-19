@@ -93,12 +93,15 @@
       width: 1px;
       background: linear-gradient(to bottom, transparent 0%, var(--accent-bright) 20%, var(--accent-bright) 80%, transparent 100%);
       opacity: 0;
-      animation: linePulse 4s ease-in-out infinite;
+      --line-max-opacity: 0.5; /* Controlled by JS */
+      /* Synchronized pulse - no delay */
+      animation: lineBreath 4s ease-in-out infinite; 
     }
 
-    @keyframes linePulse {
-      0%, 100% { opacity: 0.15; }
-      50% { opacity: 0.4; }
+    /* Single breath keyframe using the variable */
+    @keyframes lineBreath {
+      0%, 100% { opacity: calc(var(--line-max-opacity) * 0.2); }
+      50% { opacity: var(--line-max-opacity); }
     }
 
     /* Content */
@@ -113,10 +116,9 @@
       align-items: center;
     }
 
-    /* Headline + Dot Alignment */
     .hero-headline-container {
-      display: inline-flex; /* Keep H1 and Dot together */
-      align-items: baseline; /* Align dot with text baseline */
+      display: inline-flex;
+      align-items: baseline;
       justify-content: center;
       margin-bottom: 1.5rem;
       width: 100%;
@@ -127,28 +129,7 @@
       line-height: 0.9;
       letter-spacing: -0.02em;
       color: var(--fg);
-      display: inline-block; /* Allows baseline alignment */
-    }
-
-    .hero-dot {
       display: inline-block;
-      width: 12px;
-      height: 12px;
-      background: var(--accent-bright);
-      border-radius: 50%;
-      margin-left: 16px; /* Space after text */
-      /* Align bottom of dot with baseline of text */
-      vertical-align: baseline;
-      position: relative;
-      top: -0.2em; /* Fine-tune visual alignment with the bottom of the 'A' */
-      box-shadow: 0 0 20px rgba(95, 255, 99, 0.5);
-      animation: dotPulse 3s ease-in-out infinite;
-    }
-
-    @keyframes dotPulse {
-      0% { opacity: 0.2; transform: scale(0.8); box-shadow: 0 0 10px rgba(95, 255, 99, 0.2); }
-      50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 30px rgba(95, 255, 99, 0.8); }
-      100% { opacity: 0.2; transform: scale(0.8); box-shadow: 0 0 10px rgba(95, 255, 99, 0.2); }
     }
 
     .hero-subtext {
@@ -159,7 +140,7 @@
       line-height: 1.5;
     }
 
-    /* ==================== SUBSEQUENT SECTIONS (COMPRESSED FOR BREVITY) ==================== */
+    /* ==================== SUBSEQUENT SECTIONS ==================== */
     .section-green { background: var(--accent-bright); position: relative; }
     .section-green::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%, transparent 60%, rgba(0, 0, 0, 0.05) 100%); pointer-events: none; }
     .section-green::after { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); opacity: 0.02; pointer-events: none; }
@@ -301,7 +282,6 @@
     <div class="hero-content-wrapper">
       <div class="hero-headline-container reveal-text">
         <h1 class="hero-headline font-headline">heyAURA</h1>
-        <div class="hero-dot"></div>
       </div>
       
       <p class="hero-subtext font-body reveal-text">
@@ -486,30 +466,28 @@
         // Position X: Start from edge
         const offsetX = i * stepX * 0.8; // 0.8 to stop slightly before center
         
-        // Opacity: Bright at edges, dim at center
-        const opacity = 0.35 - (progress * 0.3);
-
-        // Animation Delay
-        const delay = Math.random() * 4; // Stagger pulse
+        // Opacity: Gradual decrease from edge (0.5) to center (0.05)
+        // No random factors, purely mathematical gradient
+        const maxOpacity = 0.5 - (progress * 0.45);
 
         // --- Left Line ---
         const leftLine = document.createElement('div');
         leftLine.classList.add('rim-line');
         leftLine.style.left = `${offsetX}px`;
-        leftLine.style.top = `${centerY - currentHeight / 2}px`; // Center vertically
+        leftLine.style.top = `${centerY - currentHeight / 2}px`; 
         leftLine.style.height = `${currentHeight}px`;
-        leftLine.style.opacity = opacity;
-        leftLine.style.animationDelay = `${delay}s`;
+        // Pass intensity to CSS variable
+        leftLine.style.setProperty('--line-max-opacity', maxOpacity);
+        // NO animation delay - all pulse together
         heroBg.appendChild(leftLine);
 
         // --- Right Line ---
         const rightLine = document.createElement('div');
         rightLine.classList.add('rim-line');
-        rightLine.style.right = `${offsetX}px`; // Mirror from right
+        rightLine.style.right = `${offsetX}px`; 
         rightLine.style.top = `${centerY - currentHeight / 2}px`;
         rightLine.style.height = `${currentHeight}px`;
-        rightLine.style.opacity = opacity;
-        rightLine.style.animationDelay = `${delay + 0.5}s`; // Slight offset for asymmetry feel
+        rightLine.style.setProperty('--line-max-opacity', maxOpacity);
         heroBg.appendChild(rightLine);
       }
     }
