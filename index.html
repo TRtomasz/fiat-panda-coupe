@@ -76,7 +76,7 @@
       justify-content: center;
       overflow: hidden;
       text-align: center;
-      padding-top: 80px; /* Nav offset */
+      padding-top: 80px;
     }
 
     /* Background Animation */
@@ -92,15 +92,19 @@
       position: absolute;
       width: 1px;
       background: linear-gradient(to bottom, transparent 0%, var(--accent-bright) 20%, var(--accent-bright) 80%, transparent 100%);
-      opacity: 0;
-      --line-max-opacity: 0.5; /* Controlled by JS */
-      /* Synchronized pulse - no delay */
-      animation: lineBreath 4s ease-in-out infinite; 
+      --line-max-opacity: 0.5;
+      --line-min-opacity: 0.15; /* Controlled by JS */
+      animation: lineBreath 4s ease-in-out infinite;
     }
 
-    /* Single breath keyframe using the variable */
+    /* 
+      Breath Keyframe:
+      Starts at min (exhale), peaks at max (inhale), returns to min.
+      Long lines (edge) have a higher min-opacity (never disappear).
+      Short lines (center) have a lower min-opacity (fade significantly).
+    */
     @keyframes lineBreath {
-      0%, 100% { opacity: calc(var(--line-max-opacity) * 0.2); }
+      0%, 100% { opacity: var(--line-min-opacity); }
       50% { opacity: var(--line-max-opacity); }
     }
 
@@ -449,26 +453,27 @@
       const height = window.innerHeight;
       const centerY = height / 2;
       
-      // Calculate max height based on screen
       const maxHeight = height * 0.8;
       const minHeight = height * 0.2;
       
-      // Spacing steps
-      const stepX = (width / 2) / lineCount; // Distance from edge to center
+      const stepX = (width / 2) / lineCount; 
 
       for (let i = 0; i < lineCount; i++) {
-        // Calculate progression (0 at edge, 1 at center)
         const progress = i / lineCount;
         
-        // Height: Large at edges, small at center
+        // 1. Height: Large at edges, small at center
         const currentHeight = maxHeight - (progress * (maxHeight - minHeight));
         
-        // Position X: Start from edge
-        const offsetX = i * stepX * 0.8; // 0.8 to stop slightly before center
+        // 2. Position X: Symmetric from edges
+        const offsetX = i * stepX * 0.8;
         
-        // Opacity: Gradual decrease from edge (0.5) to center (0.05)
-        // No random factors, purely mathematical gradient
-        const maxOpacity = 0.5 - (progress * 0.45);
+        // 3. Max Opacity (Inhale): Bright at edges, dim at center
+        // Edge (prog 0) = 0.6, Center (prog 1) = 0.05
+        const maxOpacity = 0.6 - (progress * 0.55);
+        
+        // 4. Min Opacity (Exhale): Higher floor for edges, lower for center
+        // Edge (prog 0) = 0.25 (never disappears), Center (prog 1) = 0.01 (almost invisible)
+        const minOpacity = 0.25 - (progress * 0.24);
 
         // --- Left Line ---
         const leftLine = document.createElement('div');
@@ -476,9 +481,8 @@
         leftLine.style.left = `${offsetX}px`;
         leftLine.style.top = `${centerY - currentHeight / 2}px`; 
         leftLine.style.height = `${currentHeight}px`;
-        // Pass intensity to CSS variable
         leftLine.style.setProperty('--line-max-opacity', maxOpacity);
-        // NO animation delay - all pulse together
+        leftLine.style.setProperty('--line-min-opacity', minOpacity);
         heroBg.appendChild(leftLine);
 
         // --- Right Line ---
@@ -488,6 +492,7 @@
         rightLine.style.top = `${centerY - currentHeight / 2}px`;
         rightLine.style.height = `${currentHeight}px`;
         rightLine.style.setProperty('--line-max-opacity', maxOpacity);
+        rightLine.style.setProperty('--line-min-opacity', minOpacity);
         heroBg.appendChild(rightLine);
       }
     }
