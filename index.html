@@ -86,7 +86,23 @@
       z-index: 1;
       pointer-events: none;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
+    .diagonal-set {
+      position: absolute;
+      width: 300vmax;
+      height: 300vmax;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .diagonal-set-1 { transform: rotate(45deg); }
+    .diagonal-set-2 { transform: rotate(-45deg); }
 
     .rim-line {
       position: absolute;
@@ -94,16 +110,11 @@
       background: linear-gradient(to bottom, transparent 0%, var(--accent-bright) 20%, var(--accent-bright) 80%, transparent 100%);
       --line-max-opacity: 0.5;
       --line-min-opacity: 0.15; 
-      /* Transform origin set to center for rotation around the vertical axis */
       transform-origin: center center; 
       animation: lineBreath 4s ease-in-out infinite;
+      will-change: opacity;
     }
 
-    /* 
-      Breath Keyframe:
-      Starts at min (exhale), peaks at max (inhale), returns to min.
-      Includes rotation logic applied via JS.
-    */
     @keyframes lineBreath {
       0%, 100% { opacity: var(--line-min-opacity); }
       50% { opacity: var(--line-max-opacity); }
@@ -444,63 +455,68 @@
 
     // ==================== HERO BACKGROUND ANIMATION ====================
     const heroBg = document.getElementById('heroBgAnimation');
-    const lineCount = 30; // Pairs of lines
+    // Increased count to 35 for 2 more lines per wedge
+    const lineCount = 35; 
 
     function generateLines() {
       if (!heroBg) return;
       heroBg.innerHTML = '';
-      
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const centerY = height / 2;
-      
-      const maxHeight = height * 0.8;
-      const minHeight = height * 0.2;
-      
-      const stepX = (width / 2) / lineCount; 
-      
-      // Angle for the diagonal "cross" effect (in degrees)
-      const angle = 12; 
 
-      for (let i = 0; i < lineCount; i++) {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const diagonal = Math.sqrt(W * W + H * H);
+
+      const set1 = document.createElement('div');
+      set1.className = 'diagonal-set diagonal-set-1';
+      
+      const set2 = document.createElement('div');
+      set2.className = 'diagonal-set diagonal-set-2';
+      
+      const step = diagonal / lineCount;
+
+      for (let i = 0; i <= lineCount; i++) {
         const progress = i / lineCount;
         
-        // 1. Height: Large at edges, small at center
-        const currentHeight = maxHeight - (progress * (maxHeight - minHeight));
+        const minLength = 10;
+        const maxLength = diagonal; 
+        const currentHeight = minLength + (maxLength - minLength) * progress;
         
-        // 2. Position X: Symmetric from edges
-        const offsetX = i * stepX * 0.8;
+        // BOOSTED VISIBILITY by another ~5%
+        // Peak range shifted up: Center ~0.17 -> Edge ~0.80
+        const maxOpacityPeak = 0.17 + (0.80 - 0.17) * progress;
         
-        // 3. Max Opacity (Inhale): Bright at edges, dim at center
-        const maxOpacity = 0.6 - (progress * 0.55);
-        
-        // 4. Min Opacity (Exhale): Higher floor for edges, lower for center
-        const minOpacity = 0.25 - (progress * 0.24);
+        // Floor range shifted up: Center ~0.15 -> Edge ~0.40
+        const minOpacityFloor = 0.15 + (0.40 - 0.15) * progress;
 
-        // --- Left Line ---
-        // Rotated Clockwise (+angle) to point inwards
-        const leftLine = document.createElement('div');
-        leftLine.classList.add('rim-line');
-        leftLine.style.left = `${offsetX}px`;
-        leftLine.style.top = `${centerY - currentHeight / 2}px`; 
-        leftLine.style.height = `${currentHeight}px`;
-        leftLine.style.transform = `rotate(${angle}deg)`;
-        leftLine.style.setProperty('--line-max-opacity', maxOpacity);
-        leftLine.style.setProperty('--line-min-opacity', minOpacity);
-        heroBg.appendChild(leftLine);
-
-        // --- Right Line ---
-        // Rotated Counter-Clockwise (-angle) to point inwards
-        const rightLine = document.createElement('div');
-        rightLine.classList.add('rim-line');
-        rightLine.style.right = `${offsetX}px`; 
-        rightLine.style.top = `${centerY - currentHeight / 2}px`;
-        rightLine.style.height = `${currentHeight}px`;
-        rightLine.style.transform = `rotate(-${angle}deg)`;
-        rightLine.style.setProperty('--line-max-opacity', maxOpacity);
-        rightLine.style.setProperty('--line-min-opacity', minOpacity);
-        heroBg.appendChild(rightLine);
+        const line = document.createElement('div');
+        line.classList.add('rim-line');
+        line.style.height = `${currentHeight}px`;
+        line.style.setProperty('--line-max-opacity', maxOpacityPeak);
+        line.style.setProperty('--line-min-opacity', minOpacityFloor);
+        
+        const offset = i * step;
+        
+        // Set 1
+        const line1_pos = line.cloneNode();
+        line1_pos.style.transform = `translateX(${offset}px)`; 
+        set1.appendChild(line1_pos);
+        
+        const line1_neg = line.cloneNode();
+        line1_neg.style.transform = `translateX(-${offset}px)`;
+        set1.appendChild(line1_neg);
+        
+        // Set 2
+        const line2_pos = line.cloneNode();
+        line2_pos.style.transform = `translateX(${offset}px)`;
+        set2.appendChild(line2_pos);
+        
+        const line2_neg = line.cloneNode();
+        line2_neg.style.transform = `translateX(-${offset}px)`;
+        set2.appendChild(line2_neg);
       }
+      
+      heroBg.appendChild(set1);
+      heroBg.appendChild(set2);
     }
 
     generateLines();
