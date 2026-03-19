@@ -93,15 +93,16 @@
       width: 1px;
       background: linear-gradient(to bottom, transparent 0%, var(--accent-bright) 20%, var(--accent-bright) 80%, transparent 100%);
       --line-max-opacity: 0.5;
-      --line-min-opacity: 0.15; /* Controlled by JS */
+      --line-min-opacity: 0.15; 
+      /* Transform origin set to center for rotation around the vertical axis */
+      transform-origin: center center; 
       animation: lineBreath 4s ease-in-out infinite;
     }
 
     /* 
       Breath Keyframe:
       Starts at min (exhale), peaks at max (inhale), returns to min.
-      Long lines (edge) have a higher min-opacity (never disappear).
-      Short lines (center) have a lower min-opacity (fade significantly).
+      Includes rotation logic applied via JS.
     */
     @keyframes lineBreath {
       0%, 100% { opacity: var(--line-min-opacity); }
@@ -457,6 +458,9 @@
       const minHeight = height * 0.2;
       
       const stepX = (width / 2) / lineCount; 
+      
+      // Angle for the diagonal "cross" effect (in degrees)
+      const angle = 12; 
 
       for (let i = 0; i < lineCount; i++) {
         const progress = i / lineCount;
@@ -468,29 +472,31 @@
         const offsetX = i * stepX * 0.8;
         
         // 3. Max Opacity (Inhale): Bright at edges, dim at center
-        // Edge (prog 0) = 0.6, Center (prog 1) = 0.05
         const maxOpacity = 0.6 - (progress * 0.55);
         
         // 4. Min Opacity (Exhale): Higher floor for edges, lower for center
-        // Edge (prog 0) = 0.25 (never disappears), Center (prog 1) = 0.01 (almost invisible)
         const minOpacity = 0.25 - (progress * 0.24);
 
         // --- Left Line ---
+        // Rotated Clockwise (+angle) to point inwards
         const leftLine = document.createElement('div');
         leftLine.classList.add('rim-line');
         leftLine.style.left = `${offsetX}px`;
         leftLine.style.top = `${centerY - currentHeight / 2}px`; 
         leftLine.style.height = `${currentHeight}px`;
+        leftLine.style.transform = `rotate(${angle}deg)`;
         leftLine.style.setProperty('--line-max-opacity', maxOpacity);
         leftLine.style.setProperty('--line-min-opacity', minOpacity);
         heroBg.appendChild(leftLine);
 
         // --- Right Line ---
+        // Rotated Counter-Clockwise (-angle) to point inwards
         const rightLine = document.createElement('div');
         rightLine.classList.add('rim-line');
         rightLine.style.right = `${offsetX}px`; 
         rightLine.style.top = `${centerY - currentHeight / 2}px`;
         rightLine.style.height = `${currentHeight}px`;
+        rightLine.style.transform = `rotate(-${angle}deg)`;
         rightLine.style.setProperty('--line-max-opacity', maxOpacity);
         rightLine.style.setProperty('--line-min-opacity', minOpacity);
         heroBg.appendChild(rightLine);
