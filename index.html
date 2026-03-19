@@ -455,7 +455,6 @@
 
     // ==================== HERO BACKGROUND ANIMATION ====================
     const heroBg = document.getElementById('heroBgAnimation');
-    // Increased count to 35 for 2 more lines per wedge
     const lineCount = 35; 
 
     function generateLines() {
@@ -481,12 +480,12 @@
         const maxLength = diagonal; 
         const currentHeight = minLength + (maxLength - minLength) * progress;
         
-        // BOOSTED VISIBILITY by another ~5%
-        // Peak range shifted up: Center ~0.17 -> Edge ~0.80
+        // Peak range: Center ~0.17 -> Edge ~0.80 (Unchanged)
         const maxOpacityPeak = 0.17 + (0.80 - 0.17) * progress;
         
-        // Floor range shifted up: Center ~0.15 -> Edge ~0.40
-        const minOpacityFloor = 0.15 + (0.40 - 0.15) * progress;
+        // Floor range REDUCED by 5%: Center ~0.05 -> Edge ~0.30
+        // (Previously 0.10 -> 0.35)
+        const minOpacityFloor = 0.05 + (0.30 - 0.05) * progress;
 
         const line = document.createElement('div');
         line.classList.add('rim-line');
