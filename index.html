@@ -147,8 +147,29 @@
       position: relative;
     }
 
-    .hero-visual {
+    .hero-content-wrapper {
       position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      padding-top: 80px; /* Nav offset */
+    }
+
+    .hero-visual {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 55%;
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .hero-visual::before {
@@ -159,8 +180,8 @@
         to left,
         transparent 0%,
         transparent 40%,
-        rgba(0, 0, 0, 0.3) 60%,
-        rgba(0, 0, 0, 0.7) 80%,
+        rgba(0, 0, 0, 0.4) 60%,
+        rgba(0, 0, 0, 0.8) 80%,
         var(--bg) 100%
       );
       z-index: 2;
@@ -176,9 +197,10 @@
     .figure-silhouette {
       position: absolute;
       right: 0;
-      bottom: 0;
-      width: 90%;
-      height: 95%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 80%;
+      height: 70%;
       background: linear-gradient(
         180deg,
         rgba(0, 39, 21, 0.15) 0%,
@@ -187,7 +209,7 @@
       );
       mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600'%3E%3Cdefs%3E%3ClinearGradient id='fade' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:white;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:white;stop-opacity:0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M200 50 C240 50 270 80 275 120 C280 160 275 180 285 200 L310 280 C315 300 320 320 315 340 L300 400 L290 450 L280 520 C278 540 270 560 250 570 L230 580 L220 590 L200 600 L180 590 L170 580 L150 570 C130 560 122 540 120 520 L110 450 L100 400 L85 340 C80 320 85 300 90 280 L115 200 C125 180 120 160 125 120 C130 80 160 50 200 50 Z' fill='url(%23fade)'/%3E%3C/svg%3E");
       mask-size: contain;
-      mask-position: bottom right;
+      mask-position: center center;
       mask-repeat: no-repeat;
       opacity: 0.6;
     }
@@ -195,9 +217,9 @@
     .rim-light {
       position: absolute;
       right: 8%;
-      top: 10%;
+      top: 20%;
       width: 2px;
-      height: 70%;
+      height: 60%;
       background: linear-gradient(
         180deg,
         transparent 0%,
@@ -213,7 +235,7 @@
     .rim-light-secondary {
       position: absolute;
       right: 15%;
-      top: 15%;
+      top: 25%;
       width: 1px;
       height: 50%;
       background: linear-gradient(
@@ -236,7 +258,8 @@
     .device-glow {
       position: absolute;
       right: 25%;
-      top: 45%;
+      top: 50%;
+      transform: translateY(-50%);
       width: 40px;
       height: 40px;
       background: radial-gradient(circle, var(--accent-bright) 0%, transparent 70%);
@@ -246,8 +269,8 @@
     }
 
     @keyframes devicePulse {
-      0%, 100% { opacity: 0.2; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
+      0%, 100% { opacity: 0.2; transform: translateY(-50%) scale(1); }
+      50% { opacity: 0.4; transform: translateY(-50%) scale(1.2); }
     }
 
     .reveal-text {
@@ -761,68 +784,55 @@
       min-height: 100vh;
       display: flex;
       align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
 
-    /* X Pattern Background */
-    .x-pattern-container {
+    /* X Pattern Background - Using CSS for reliability */
+    .x-pattern-bg {
       position: absolute;
       inset: 0;
-      overflow: hidden;
+      background-image: 
+        linear-gradient(-12deg, transparent 48%, rgba(255, 255, 255, 0.12) 48%, rgba(255, 255, 255, 0.12) 52%, transparent 52%),
+        linear-gradient(12deg, transparent 48%, rgba(255, 255, 255, 0.12) 48%, rgba(255, 255, 255, 0.12) 52%, transparent 52%);
+      background-size: 100px 100px;
+      opacity: 0.5;
     }
 
-    .x-pattern {
+    /* Additional X layer for density */
+    .x-pattern-bg-2 {
       position: absolute;
-      inset: -50px;
-      width: calc(100% + 100px);
-      height: calc(100% + 100px);
+      inset: 0;
+      background-image: 
+        linear-gradient(-12deg, transparent 46%, rgba(255, 255, 255, 0.08) 46%, rgba(255, 255, 255, 0.08) 54%, transparent 54%),
+        linear-gradient(12deg, transparent 46%, rgba(255, 255, 255, 0.08) 46%, rgba(255, 255, 255, 0.08) 54%, transparent 54%);
+      background-size: 60px 60px;
+      background-position: 30px 30px;
+      opacity: 0.6;
     }
 
-    .x-mark {
-      position: absolute;
-      color: rgba(255, 255, 255, 0.035);
-      font-family: 'Geologica', sans-serif;
-      font-weight: 900;
-      transform: rotate(-12deg);
-      user-select: none;
-      pointer-events: none;
-    }
-
-    /* Gradient overlays for readability */
-    .trust-gradient-left {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 55%;
-      background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.85) 0%,
-        rgba(0, 0, 0, 0.7) 40%,
-        rgba(0, 0, 0, 0.3) 70%,
-        transparent 100%
-      );
-      pointer-events: none;
-    }
-
+    /* Center gradient for content readability */
     .trust-gradient-center {
       position: absolute;
-      left: 10%;
-      top: 0;
-      bottom: 0;
-      width: 60%;
+      inset: 0;
       background: radial-gradient(
-        ellipse 100% 80% at 30% 50%,
-        rgba(0, 0, 0, 0.6) 0%,
-        transparent 70%
+        ellipse 50% 50% at 50% 50%,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 80%
       );
       pointer-events: none;
+      z-index: 1;
     }
 
-    /* Trust Content */
+    /* Trust Content - Centered */
     .trust-content {
       position: relative;
       z-index: 10;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .trust-headline {
@@ -830,7 +840,7 @@
       font-weight: 900;
       line-height: 1.15;
       color: var(--fg);
-      max-width: 700px;
+      max-width: 800px;
       margin-bottom: 48px;
       letter-spacing: -0.02em;
     }
@@ -1006,8 +1016,14 @@
     .footer-link:focus-visible,
     .footer-legal-link:focus-visible,
     button:focus-visible {
-      outline: 2px solid #000;
+      outline: 2px solid var(--accent-bright);
       outline-offset: 2px;
+    }
+
+    .section-footer .btn-primary:focus-visible,
+    .section-footer .footer-link:focus-visible,
+    .section-footer .footer-legal-link:focus-visible {
+      outline-color: #000;
     }
 
     /* Reduced motion */
@@ -1053,41 +1069,34 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero-section relative flex items-center">
+  <section class="hero-section relative">
     <div class="subtle-grid"></div>
     
-    <div class="max-w-[1600px] mx-auto px-8 lg:px-16 w-full">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-0 pt-32 lg:pt-0">
-        
-        <!-- Left: Text Content -->
-        <div class="flex flex-col justify-center min-h-[80vh] lg:min-h-screen relative z-10">
-          <div class="max-w-xl">
-            <h1 class="reveal-text font-headline text-[clamp(4rem,12vw,10rem)] leading-[0.9] tracking-tight text-white mb-6">
-              heyAURA
-            </h1>
-            
-            <p class="reveal-text font-body text-lg lg:text-xl text-white/60 tracking-wide mb-12 max-w-md">
-              Intelligence for the decentralized future.
-            </p>
-            
-            <div class="reveal-text">
-              <button class="btn-primary px-10 py-4 rounded-full text-base">
-                Get Started
-              </button>
-            </div>
-          </div>
-        </div>
+    <!-- Right: Visual (Aligned Right-Center) -->
+    <div class="hero-visual hidden lg:block">
+      <div class="figure-container">
+        <div class="figure-silhouette"></div>
+        <div class="rim-light"></div>
+        <div class="rim-light-secondary"></div>
+        <div class="device-glow"></div>
+      </div>
+    </div>
 
-        <!-- Right: Visual -->
-        <div class="hero-visual absolute right-0 top-0 w-full lg:w-[55%] h-full hidden lg:block">
-          <div class="figure-container">
-            <div class="figure-silhouette"></div>
-            <div class="rim-light"></div>
-            <div class="rim-light-secondary"></div>
-            <div class="device-glow"></div>
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black pointer-events-none z-10"></div>
-            <div class="absolute inset-0 opacity-[0.03] pointer-events-none z-20" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23noise)%27/%3E%3C/svg%3E');"></div>
-          </div>
+    <!-- Left/Center: Text Content -->
+    <div class="hero-content-wrapper">
+      <div class="max-w-xl px-8">
+        <h1 class="reveal-text font-headline text-[clamp(4rem,12vw,10rem)] leading-[0.9] tracking-tight text-white mb-6">
+          heyAURA
+        </h1>
+        
+        <p class="reveal-text font-body text-lg lg:text-xl text-white/60 tracking-wide mb-12">
+          Intelligence for the decentralized future.
+        </p>
+        
+        <div class="reveal-text">
+          <button class="btn-primary px-10 py-4 rounded-full text-base">
+            Get Started
+          </button>
         </div>
       </div>
     </div>
@@ -1096,7 +1105,7 @@
     <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
     
     <!-- Corner accent -->
-    <div class="absolute bottom-8 left-8 lg:left-16 flex items-center gap-2 opacity-40">
+    <div class="absolute bottom-8 left-8 lg:left-16 flex items-center gap-2 opacity-40 z-20">
       <div class="w-1 h-1 rounded-full bg-[var(--accent-bright)]"></div>
       <span class="font-body text-xs tracking-widest text-white/40">SCROLL</span>
     </div>
@@ -1256,16 +1265,14 @@
 
   <!-- Trust Section -->
   <section class="section-trust py-24 lg:py-32">
-    <!-- X Pattern Background -->
-    <div class="x-pattern-container">
-      <div class="x-pattern" id="xPattern"></div>
-    </div>
+    <!-- X Pattern Background using CSS -->
+    <div class="x-pattern-bg"></div>
+    <div class="x-pattern-bg-2"></div>
     
-    <!-- Gradient overlays -->
-    <div class="trust-gradient-left"></div>
+    <!-- Center gradient overlay -->
     <div class="trust-gradient-center"></div>
     
-    <!-- Content -->
+    <!-- Content - Centered -->
     <div class="max-w-[1400px] mx-auto px-8 lg:px-16 w-full">
       <div class="trust-content">
         <div class="reveal-trust">
@@ -1322,11 +1329,7 @@
     // ==================== NAVIGATION ====================
     const nav = document.querySelector('.nav-container');
     const sectionGreen = document.querySelector('.section-green');
-    const sectionToken = document.querySelector('.section-token');
-    const sectionTrust = document.querySelector('.section-trust');
-    const sectionFooter = document.querySelector('.section-footer');
-    let lastScroll = 0;
-
+    
     function updateNavBackground() {
       const currentScroll = window.pageYOffset;
       const greenSectionTop = sectionGreen ? sectionGreen.offsetTop : Infinity;
@@ -1344,8 +1347,6 @@
       } else {
         nav.classList.remove('over-green');
       }
-      
-      lastScroll = currentScroll;
     }
 
     window.addEventListener('scroll', updateNavBackground, { passive: true });
@@ -1462,52 +1463,6 @@
         }
       });
     }
-
-    // ==================== X PATTERN GENERATION ====================
-    const xPattern = document.getElementById('xPattern');
-    
-    function generateXPattern() {
-      if (!xPattern) return;
-      
-      xPattern.innerHTML = '';
-      
-      const containerWidth = window.innerWidth + 100;
-      const containerHeight = xPattern.closest('.section-trust').offsetHeight + 100;
-      
-      const sizes = [32, 40, 48, 56, 64];
-      const spacing = 100;
-      
-      for (let y = -50; y < containerHeight; y += spacing) {
-        for (let x = -50; x < containerWidth; x += spacing) {
-          if (Math.random() > 0.7) continue;
-          
-          const size = sizes[Math.floor(Math.random() * sizes.length)];
-          const offsetX = (Math.random() - 0.5) * 30;
-          const offsetY = (Math.random() - 0.5) * 30;
-          const opacity = 0.02 + Math.random() * 0.035;
-          
-          const xMark = document.createElement('span');
-          xMark.className = 'x-mark';
-          xMark.textContent = 'X';
-          xMark.style.cssText = `
-            left: ${x + offsetX}px;
-            top: ${y + offsetY}px;
-            font-size: ${size}px;
-            opacity: ${opacity};
-          `;
-          
-          xPattern.appendChild(xMark);
-        }
-      }
-    }
-
-    generateXPattern();
-    
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(generateXPattern, 200);
-    });
   </script>
 </body>
 </html>
